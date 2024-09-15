@@ -31,6 +31,11 @@ def click(row, column):
         player = O
         number_of_turns +=1
         numberofturnsButton.config(text=number_of_turns)
+    boards = [] 
+    for row in range(len(board)):
+        for column in range(len(board)):
+            boards.append(board[row][column]['text'])
+    print (boards)
     turn.config(text= (player + "'s turn"))
     terminal()
     if AI == True:
@@ -55,14 +60,7 @@ def runai():
         return
     row , column = choice(actions())
     click(row, column)
-    """
-    egg = []
-    for row in range(len(board)):
-        for column in range(len(board[row])):
-            if board[row][column]['text'] == "":
-                egg.append((row, column))
-                click(random.choice(egg))
-    """
+    
 
 
 # Checks for Winner
@@ -73,30 +71,22 @@ def check_winner():
     for row in range(len(board)):
         if board[row][0]['text'] == board[row][1]['text'] == board[row][2]['text'] and board[row][0]['text']  != "":
             print("egg2")
-            board[row][0].config(bg="green")
-            board[row][1].config(bg="green")
-            board[row][2].config(bg="green")
+            colour(row, 0, row, 1, row, 2)
             return board[row][0]['text']
     print ("win")
     for column in range(len(board)):
         if board[0][column]['text'] == board[1][column]['text'] == board[2][column]['text'] and board[1][column]['text']  != "":
             print("egg2")
-            board[0][column].config(bg="green")
-            board[1][column].config(bg="green")
-            board[2][column].config(bg="green")
+            colour(0, column, 1,column, 2, column)
             return board[0][column]['text']
     
     if board[1][1]['text'] == '':
         return False
     elif board[0][0]['text'] == board[2][2]['text'] == board[1][1]['text']:
-        board[0][0].config(bg="green")
-        board[1][1].config(bg="green")
-        board[2][2].config(bg="green")
+        colour( 0, 0, 1, 1, 2, 2)
         return board[0][0]['text']
     elif board[0][2]['text'] == board[2][0]['text'] == board[1][1]['text']:
-        board[0][2].config(bg="green")
-        board[2][0].config(bg="green")
-        board[1][1].config(bg="green")
+        colour(0,2 , 2, 0 ,1, 1)
         return board[0][2]['text']
     space = 9
     for row in range(len(board)):
@@ -109,26 +99,28 @@ def check_winner():
             for column in range(len(board)):
                 board[row][column].config(bg="yellow")   
         return "Tie"
-    
+
+def colour(r1,c1,r2,c2,r3,c3):
+    board[r1][c1].config(bg="green")
+    board[r2][c2].config(bg="green")
+    board[r3][c3].config(bg="green")
+
 def new_game(board):
     global player
     global number_of_turns
     number_of_turns = 0
     numberofturnsButton.config(text=number_of_turns)
     player = X
-    turn.config(text=player+"'s turn")
+    turn.config(text=player+"'s turn. TicTacToe. Click boxes to play, or click checkbox to play with AI.")
     for row in range(len(board)):
         for column in range((len(board))):
             board[row][column].config(text="",bg="#F0F0F0")
     return False
 
-def result():
-    pass
-    boards = []
-    for row in range(len(board)):
-        for column in range(len(board)):
-            board.append(board[row][column]['text'])
-    
+def result(boards, actions):
+    row, column = action
+    boards[row][column] = player
+    print (boards)
     return boards
 
     
@@ -155,21 +147,23 @@ def utility():
     
     else:
         return 0
-
-def maxvalue():
+def minimax(boards):
+    row, column = minvalue(boards)
+    return 
+def maxvalue(boards):
     v = float('-inf')
     if terminal():
         return utility()
     for action in actions():
-        v = max(v, minvalue(actions()))
+        v = max(v, minvalue(result(boards, action)))
         return v
 
-def minvalue():
+def minvalue(boards):
     v = float('inf')
     if terminal():
         return utility()
     for action in actions:
-        v = min(v, maxvalue(actions()))
+        v = min(v, maxvalue(result(boards, action)))
         return v
 
 
@@ -184,7 +178,7 @@ numberofturnsButton.pack(side="top")
 aicheckBox = Checkbutton(root, text='AI' , command=aitrue)
 aicheckBox.pack()
 
-turn = Label(text= "")
+turn = Label(text= "TicTacToe. Click boxes to play, or click checkbox to play with AI.")
 turn.pack(side="top")
 
 board = [[EMPTY, EMPTY, EMPTY],  
